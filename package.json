@@ -1,0 +1,17 @@
+{
+  "name": "yolgecen-motors-site",
+  "version": "1.0.0",
+  "description": "YOLGE\u00c7EN MOTORS - Minimal, fast Turkish one-page site for Heroku.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "echo 'No build step required'"
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.19.2"
+  }
+}
