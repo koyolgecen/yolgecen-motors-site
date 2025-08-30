@@ -6,24 +6,29 @@ const app = express();
 app.disable('x-powered-by');
 app.use(compression());
 
-// Basic security headers
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  next();
-});
-
+// STATIKLER: uzun cache; AMA .html dosyalarına NO-STORE
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1d',
-  extensions: ['html']
+    maxAge: '7d',
+    immutable: true,
+    index: false, // ÖNEMLİ: index.html'i static servis ETME
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-store');
+        }
+    }
 }));
 
+// KÖK SAYFA: index.html'i hep NO-STORE gönder
+app.get('/', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// (SPA ise) diğer yollar da index'e düşsün: yine NO-STORE
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.set('Cache-Control', 'no-store');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`YOLGEÇEN MOTORS site is running on port ${port}`);
-});
+app.listen(port, () => console.log(`YOLGEÇEN MOTORS running on ${port}`));
